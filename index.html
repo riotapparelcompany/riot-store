@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RIOT | ARCHIVE SYSTEM</title>
+    <style>
+        /* --- CORE STYLING --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-area {
+            flex-shrink: 0;
+            padding-top: 25px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #riot-logo {
+            width: 150px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.05));
+        }
+
+        .main-content-area {
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .step-section {
+            width: 100%;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 6px;
+            font-weight: 900;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            color: #FFFFFF;
+        }
+
+        input[type="radio"] { display: none; }
+
+        /* Step 1: Restored Silhouette Sizing */
+        .silhouette-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .silhouette-card {
+            flex: 1;
+            max-width: 220px; /* Restored to your original size */
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .silhouette-card label {
+            display: block;
+            cursor: pointer;
+            padding: 20px 10px;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            transition: 0.4s;
+        }
+
+        .silhouette-card img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            transition: 0.4s;
+        }
+
+        input:checked + label {
+            background: #080808;
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(255,255,255,0.05);
+        }
+
+        .card-label {
+            font-weight: 800;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Pill Options */
+        .selector-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pill-option {
+            display: inline-block;
+            border: 1px solid #222;
+            color: #FFFFFF;
+            padding: 16px 40px;
+            border-radius: 100px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+
+        input:checked + .pill-option {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        /* Contact Fields - Mixed Case */
+        .input-group { width: 100%; max-width: 400px; margin: 0 auto; }
+        .text-input { 
+            width: 100%; 
+            background: transparent; 
+            border: none; 
+            border-bottom: 1px solid #333; 
+            color: #fff; 
+            padding: 15px 0; 
+            font-size: 1.1rem; 
+            margin-bottom: 20px; 
+            outline: none; 
+            transition: 0.3s; 
+            text-align: center;
+            font-weight: 300;
+        }
+        .text-input:focus { border-color: #fff; }
+
+        /* Navigation */
+        .nav-footer {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .btn-pill {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 100px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            cursor: pointer;
+            height: 54px;
+            min-width: 180px;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-next { background: #FFFFFF; color: #000; }
+        .btn-back-text { background: transparent; color: #555; font-size: 0.65rem; letter-spacing: 2px; font-weight: 700; }
+
+        .hidden { display: none !important; }
+
+        #successView { 
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        #successView h2 { font-size: 2.5rem; letter-spacing: -2px; margin-bottom: 10px; font-weight: 900; }
+        #successView p { color: #555; letter-spacing: 2px; font-size: 0.7rem; text-transform: uppercase; }
+
+        @media (max-width: 768px) {
+            body, html { overflow-y: auto; }
+            .form-container { height: auto; min-height: 100vh; }
+            .silhouette-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .silhouette-card { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <header class="header-area">
+        <img src="https://i.imgur.com/TvLckH2.png" id="riot-logo" alt="RIOT">
+    </header>
+
+    <main class="main-content-area">
+        <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScgJF8AKw8o4autQjx45vSUReOY3YREGcxHLrc7UhJZfFZyKw/formResponse" method="POST" id="riotForm" target="hidden_iframe">
+            
+            <!-- STEP 1: SILHOUETTE -->
+            <div class="step-section" id="step1">
+                <h2 class="step-subtitle">01 // Select Silhouette</h2>
+                <div class="silhouette-row">
+                    <div class="silhouette-card">
+                        <input type="radio" name="entry.36730917" value="RIOT - INTENT" id="sil1">
+                        <label for="sil1"><img src="https://i.imgur.com/bERoYWo.png"><p class="card-label">Intent</p></label>
+                    </div>
+                    <div class="silhouette-card">
+                        <input type="radio" name="entry.36730917" value="RIOT - LOVE" id="sil2">
+                        <label for="sil2"><img src="https://i.imgur.com/uPlWK6i.png"><p class="card-label">Love</p></label>
+                    </div>
+                    <div class="silhouette-card">
+                        <input type="radio" name="entry.36730917" value="RIOT - FAITH" id="sil3">
+                        <label for="sil3"><img src="https://i.imgur.com/jEgevQz.png"><p class="card-label">Faith</p></label>
+                    </div>
+                    <div class="silhouette-card">
+                        <input type="radio" name="entry.36730917" value="RIOT - BLOOM" id="sil4">
+                        <label for="sil4"><img src="https://i.imgur.com/QaLRDzX.png"><p class="card-label">Bloom</p></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: SIZE -->
+            <div class="step-section hidden" id="step2">
+                <h2 class="step-subtitle">02 // Select Size</h2>
+                <div class="selector-group">
+                    <input type="radio" name="entry.33323870" value="S" id="s1"><label for="s1" class="pill-option">S</label>
+                    <input type="radio" name="entry.33323870" value="M" id="s2"><label for="s2" class="pill-option">M</label>
+                    <input type="radio" name="entry.33323870" value="L" id="s3"><label for="s3" class="pill-option">L</label>
+                    <input type="radio" name="entry.33323870" value="XL" id="s4"><label for="s4" class="pill-option">XL</label>
+                </div>
+            </div>
+
+            <!-- STEP 3: SHIPPING -->
+            <div class="step-section hidden" id="step3">
+                <h2 class="step-subtitle">03 // Shipping Details</h2>
+                <div class="input-group">
+                    <input type="text" name="entry.1070567161" class="text-input" placeholder="Full Name" required>
+                    <input type="text" name="entry.763608572" class="text-input" placeholder="Contact Number" required>
+                    <input type="text" name="entry.1647676820" class="text-input" placeholder="Delivery Address" required>
+                </div>
+            </div>
+
+            <!-- STEP 4: PAYMENT -->
+            <div class="step-section hidden" id="step4">
+                <h2 class="step-subtitle">04 // Payment</h2>
+                <div class="selector-group">
+                    <input type="radio" name="entry.754671528" value="Cash on Delivery" id="p1"><label for="p1" class="pill-option">Cash on Delivery</label>
+                    <input type="radio" name="entry.754671528" value="Bank Transfer" id="p2"><label for="p2" class="pill-option">Bank Transfer</label>
+                </div>
+            </div>
+
+            <!-- SUCCESS -->
+            <div id="successView">
+                <h2>CONFIRMED</h2>
+                <p>ORDER ARCHIVED.</p>
+            </div>
+        </form>
+    </main>
+
+    <footer class="nav-footer" id="navUi">
+        <button type="button" class="btn-pill btn-back-text hidden" id="backBtn">BACK</button>
+        <button type="button" class="btn-pill btn-next" id="nextBtn">NEXT</button>
+    </footer>
+</div>
+
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted){handleSuccess();}"></iframe>
+
+<script>
+    const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4')];
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentStep = 0;
+    let submitted = false;
+
+    nextBtn.addEventListener('click', () => {
+        if(currentStep !== 2) {
+            const checked = steps[currentStep].querySelector('input:checked');
+            if(!checked) { alert("Selection Required"); return; }
+        } else {
+            const inputs = steps[2].querySelectorAll('input');
+            if([...inputs].some(i => i.value === "")) { alert("Details Required"); return; }
+        }
+
+        if (currentStep < steps.length - 1) {
+            steps[currentStep].classList.add('hidden');
+            currentStep++;
+            steps[currentStep].classList.remove('hidden');
+            backBtn.classList.remove('hidden');
+            if(currentStep === steps.length - 1) nextBtn.innerText = "SUBMIT";
+        } else {
+            submitted = true;
+            document.getElementById('riotForm').submit();
+        }
+    });
+
+    backBtn.addEventListener('click', () => {
+        steps[currentStep].classList.add('hidden');
+        currentStep--;
+        steps[currentStep].classList.remove('hidden');
+        nextBtn.innerText = "NEXT";
+        if(currentStep === 0) backBtn.classList.add('hidden');
+    });
+
+    function handleSuccess() {
+        document.getElementById('navUi').classList.add('hidden');
+        steps.forEach(s => s.classList.add('hidden'));
+        document.getElementById('successView').style.display = 'flex';
+    }
+</script>
+</body>
+</html>
