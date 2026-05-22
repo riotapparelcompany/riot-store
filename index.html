@@ -4,244 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RIOT | ARCHIVE SYSTEM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- CORE STYLING --- */
+        :root {
+            --accent: #ffffff;
+            --bg: #000000;
+            --grey: #888888;
+            --border: #1a1a1a;
+            --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --input-font: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        /* --- CORE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body, html {
             height: 100%;
-            overflow: hidden;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #fff;
+            background-color: var(--bg);
+            font-family: var(--ui-font);
+            color: var(--accent);
             -webkit-font-smoothing: antialiased;
+            overflow: hidden; 
+            text-transform: uppercase;
         }
+
+        /* HIDE SCROLLBARS */
+        *::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
 
         .form-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            position: relative;
         }
 
+        /* --- HEADER --- */
         .header-area {
-            flex-shrink: 0;
-            padding-top: 25px;
+            flex: 0 0 auto;
+            padding: 40px 25px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
         }
 
-        #riot-logo {
-            width: 150px;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.05));
+        #riot-logo { width: 130px; height: auto; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 30px; }
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a {
+            color: #fff; text-decoration: none; font-size: 0.65rem;
+            font-weight: 900; letter-spacing: 2px; opacity: 0.4; transition: 0.3s;
+            cursor: pointer;
         }
+        .nav-links a:hover, .nav-links a.active { opacity: 1; }
+        .social-icons { display: flex; gap: 18px; padding-left: 20px; border-left: 1px solid #222; }
+        .social-icons a { color: #fff; font-size: 1.1rem; opacity: 0.6; transition: 0.3s; }
 
+        /* --- VIEW MANAGEMENT --- */
+        .view {
+            display: none;
+            flex: 1 1 auto;
+            overflow-y: auto; 
+            padding: 0 25px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .view.active { display: flex; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- SHOP / FORM AREA --- */
         .main-content-area {
-            flex-grow: 1; 
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            position: relative;
+            min-height: 50vh;
         }
 
         .step-section {
             width: 100%;
+            display: none;
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        .step-section.active { display: block; }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .step-subtitle {
-            font-size: 0.75rem;
-            letter-spacing: 6px;
+            font-size: 0.85rem;
+            letter-spacing: 8px;
             font-weight: 900;
-            margin-bottom: 50px;
-            text-transform: uppercase;
-            color: #FFFFFF;
-        }
-
-        input[type="radio"] { display: none; }
-
-        .silhouette-row {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .silhouette-card {
-            flex: 1;
-            max-width: 220px; 
-            cursor: pointer;
-            transition: all 0.4s ease;
-        }
-
-        .silhouette-card label {
-            display: block;
-            cursor: pointer;
-            padding: 20px 10px;
-            border-radius: 20px;
-            border: 1px solid transparent;
-            transition: 0.4s;
-        }
-
-        .silhouette-card img {
-            width: 100%;
-            height: auto;
-            margin-bottom: 15px;
-            transition: 0.4s;
-        }
-
-        input:checked + label {
-            background: #080808;
-            border-color: #fff;
-            box-shadow: 0 0 30px rgba(255,255,255,0.05);
-        }
-
-        .card-label {
-            font-weight: 800;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* UPDATED: SMALLER GREY PRICE TEXT */
-        .card-price {
-            font-size: 0.7rem; 
-            color: #888;
-            margin-top: 6px;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .selector-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .pill-option {
-            display: inline-block;
-            border: 1px solid #222;
-            color: #FFFFFF;
-            padding: 16px 40px;
-            border-radius: 100px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-        }
-
-        input:checked + .pill-option {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
-        }
-
-        #delivery-notice {
-            margin-top: 25px;
-            font-size: 0.7rem;
-            color: #888;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            visibility: hidden; 
-            height: 20px;
-        }
-
-        .visible-notice {
-            visibility: visible !important;
-        }
-
-        .input-group { width: 100%; max-width: 400px; margin: 0 auto; }
-        .text-input { 
-            width: 100%; 
-            background: transparent; 
-            border: none; 
-            border-bottom: 1px solid #333; 
-            color: #fff; 
-            padding: 15px 0; 
-            font-size: 1.1rem; 
-            margin-bottom: 20px; 
-            outline: none; 
-            transition: 0.3s; 
+            margin-bottom: 40px; 
             text-align: center;
-            font-weight: 300;
-        }
-        .text-input:focus { border-color: #fff; }
-
-        .nav-footer {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            padding-bottom: 50px;
         }
 
-        .btn-pill {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 100px;
+        /* --- STEP 1: SILHOUETTES --- */
+        .silhouette-row { display: flex; justify-content: center; gap: 20px; width: 100%; max-width: 1100px; }
+        .silhouette-card { flex: 1; text-align: center; }
+        .silhouette-card img { width: 100%; height: auto; margin-bottom: 15px; }
+        .silhouette-card label { display: block; cursor: pointer; padding: 10px; transition: 0.5s; }
+        .silhouette-card:hover label { transform: scale(1.08); }
+        .card-label { font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
+        .card-price { font-size: 0.65rem; color: var(--grey); margin-top: 6px; }
+
+        /* --- STEP 2: SIZE --- */
+        .product-page-flex { display: flex; align-items: center; justify-content: center; gap: 50px; text-align: left; max-width: 950px; margin: 0 auto; }
+        .product-image-side img { width: 100%; max-width: 400px; }
+        .product-name { font-size: 3rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 10px; }
+        .product-specs { font-size: 0.65rem; color: var(--grey); margin-bottom: 25px; }
+        .product-price-large { font-size: 1.4rem; font-weight: 800; margin-bottom: 30px; }
+
+        /* --- SELECTORS & INPUTS --- */
+        .hidden-radio { display: none; }
+        .selector-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px; }
+        .pill-label { border: 1px solid #222; padding: 12px 28px; border-radius: 100px; font-weight: 900; cursor: pointer; font-size: 0.7rem; transition: 0.3s; }
+        .hidden-radio:checked + .pill-label { background: #fff; color: #000; border-color: #fff; }
+
+        /* --- DELIVERY DETAILS --- */
+        .delivery-stack { width: 100%; max-width: 450px; margin: 0 auto; border-top: 1px solid #1a1a1a; }
+        .text-input {
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid #1a1a1a;
+            color: #fff; padding: 18px 0; outline: none; text-align: center;
+            letter-spacing: 1px;
+            font-family: var(--ui-font); 
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: none; 
+            transition: border-color 0.4s ease;
+        }
+        .text-input::placeholder {
+            font-family: var(--ui-font);
             font-weight: 900;
+            color: #333;
+            font-size: 0.6rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 4px;
-            cursor: pointer;
-            height: 54px;
-            min-width: 180px;
-            transition: 0.3s;
-            border: none;
         }
 
-        .btn-next { background: #FFFFFF; color: #000; }
-        .btn-back-text { background: transparent; color: #555; font-size: 0.65rem; letter-spacing: 2px; font-weight: 700; }
-
-        .hidden { display: none !important; }
-
-        #successView { 
-            display: none; 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: absolute; 
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        #successView h2 { font-size: 3rem; letter-spacing: -2px; margin-bottom: 10px; font-weight: 900; }
-        #successView p { color: #555; letter-spacing: 2px; font-size: 0.7rem; text-transform: uppercase; }
+        /* --- TEXT PAGES (ABOUT/CONTACT) --- */
+        .text-page-content { max-width: 700px; margin: 0 auto; }
+        .section-divider { border-bottom: 1px solid var(--border); padding: 40px 0; }
+        .section-divider:last-child { border-bottom: none; }
         
-        .final-bill {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #222;
-            width: 100%;
-            max-width: 300px;
+        .huge-title { font-size: 1.4rem; font-weight: 900; letter-spacing: 4px; margin-bottom: 25px; color: #fff; }
+        .manifesto-lead { font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; color: #fff; }
+        .standard-para { font-size: 0.75rem; line-height: 1.8; color: var(--grey); text-transform: none; margin-bottom: 20px; letter-spacing: 0.5px; }
+        
+        .phi-item { margin-bottom: 35px; }
+        .phi-num { font-family: var(--input-font); font-size: 0.6rem; color: #444; display: block; margin-bottom: 5px; }
+        .phi-title { font-size: 0.9rem; font-weight: 900; margin-bottom: 12px; letter-spacing: 2px; color: #fff; }
+        
+        .quote-block { font-size: 1.1rem; font-weight: 900; text-align: center; margin: 60px 0; letter-spacing: 1.5px; line-height: 1.3; color: #fff; }
+
+        /* CONTACT SPECIFIC */
+        .contact-label { font-size: 0.75rem; color: #fff; font-weight: 900; letter-spacing: 2px; margin-bottom: 12px; }
+        .contact-detail { font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 5px; color: var(--grey); font-weight: 400; text-transform: none; }
+        .contact-link { color: inherit; text-decoration: none; border-bottom: 1px solid #222; }
+
+        /* --- FOOTER --- */
+        .nav-footer { 
+            flex: 0 0 auto; padding: 30px 20px; display: flex; justify-content: center; align-items: center; gap: 25px; background: var(--bg);
         }
-        .total-amount { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 10px; }
-        .bank-msg { font-size: 0.65rem; color: #888; letter-spacing: 1px; line-height: 1.6; }
+        .btn-pill { height: 42px; min-width: 140px; border-radius: 100px; border: none; font-weight: 900; font-size: 0.65rem; letter-spacing: 3px; cursor: pointer; transition: 0.3s; }
+        .btn-next { background: #fff; color: #000; }
+        .btn-back { background: transparent; color: #444; min-width: auto; padding: 0 15px; font-size: 0.5rem; letter-spacing: 1px; }
+        .btn-back:hover { color: #fff; }
+
+        /* --- SUCCESS VIEW (Centered & Resized) --- */
+        #view-success { 
+            flex: 1; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding-bottom: 10vh; /* Adjusts the center point slightly up for visual balance */
+        }
+        #view-success h2 { font-size: 3.5rem; font-weight: 900; letter-spacing: -3px; }
+        #view-success p { color: var(--grey); letter-spacing: 5px; font-size: 0.65rem; margin-top: 15px; }
 
         @media (max-width: 768px) {
             body, html { overflow-y: auto; }
-            .form-container { height: auto; min-height: 100vh; }
+            .header-area { flex-direction: column; gap: 20px; padding: 20px 10px; }
             .silhouette-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .silhouette-card { max-width: none; }
-            #successView { position: relative; padding: 100px 0; }
+            .product-page-flex { flex-direction: column; text-align: center; }
+            #view-success h2 { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -249,149 +202,271 @@
 
 <div class="form-container">
     <header class="header-area">
-        <img src="https://i.imgur.com/TvLckH2.png" id="riot-logo" alt="RIOT">
+        <img src="https://i.imgur.com/TvLckH2.png" id="riot-logo" alt="RIOT" onclick="showView('shop')">
+        <div class="header-right">
+            <nav class="nav-links">
+                <a onclick="showView('about')" id="nav-about">ABOUT</a>
+                <a onclick="showView('contact')" id="nav-contact">CONTACT</a>
+            </nav>
+            <div class="social-icons">
+                <a href="https://instagram.com/riotapparel.lk" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://tiktok.com/@riotapparel.lk" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
     </header>
 
-    <main class="main-content-area">
-        <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScgJF8AKw8o4autQjx45vSUReOY3YREGcxHLrc7UhJZfFZyKw/formResponse" method="POST" id="riotForm" target="hidden_iframe">
-            
-            <div class="step-section" id="step1">
-                <h2 class="step-subtitle">01 // Select Silhouette</h2>
-                <div class="silhouette-row">
-                    <div class="silhouette-card">
-                        <input type="radio" name="entry.36730917" value="RIOT - INTENT" id="sil1">
-                        <label for="sil1">
-                            <img src="https://i.imgur.com/bERoYWo.png">
-                            <p class="card-label">Intent</p>
-                            <p class="card-price">Rs. 3,450</p>
-                        </label>
-                    </div>
-                    <div class="silhouette-card">
-                        <input type="radio" name="entry.36730917" value="RIOT - LOVE" id="sil2">
-                        <label for="sil2">
-                            <img src="https://i.imgur.com/uPlWK6i.png">
-                            <p class="card-label">Love</p>
-                            <p class="card-price">Rs. 3,450</p>
-                        </label>
-                    </div>
-                    <div class="silhouette-card">
-                        <input type="radio" name="entry.36730917" value="RIOT - FAITH" id="sil3">
-                        <label for="sil3">
-                            <img src="https://i.imgur.com/jEgevQz.png">
-                            <p class="card-label">Faith</p>
-                            <p class="card-price">Rs. 3,450</p>
-                        </label>
-                    </div>
-                    <div class="silhouette-card">
-                        <input type="radio" name="entry.36730917" value="RIOT - BLOOM" id="sil4">
-                        <label for="sil4">
-                            <img src="https://i.imgur.com/QaLRDzX.png">
-                            <p class="card-label">Bloom</p>
-                            <p class="card-price">Rs. 3,450</p>
-                        </label>
+    <!-- SHOP VIEW -->
+    <main id="view-shop" class="view active">
+        <div class="main-content-area">
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted){handleSuccess();}"></iframe>
+            <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScgJF8AKw8o4autQjx45vSUReOY3YREGcxHLrc7UhJZfFZyKw/formResponse" method="POST" id="riotForm" target="hidden_iframe">
+                
+                <div class="step-section active" id="step1">
+                    <h2 class="step-subtitle">01 // LOVE SERIES</h2>
+                    <div class="silhouette-row">
+                        <div class="silhouette-card">
+                            <input type="radio" name="entry.36730917" value="RIOT - INTENT" id="p1" class="hidden-radio" onclick="selectProduct('INTENT', 'https://i.imgur.com/bERoYWo.png')">
+                            <label for="p1"><img src="https://i.imgur.com/bERoYWo.png"><p class="card-label">INTENT</p><p class="card-price">RS. 3,200</p></label>
+                        </div>
+                        <div class="silhouette-card">
+                            <input type="radio" name="entry.36730917" value="RIOT - LOVE" id="p2" class="hidden-radio" onclick="selectProduct('LOVE', 'https://i.imgur.com/uPlWK6i.png')">
+                            <label for="p2"><img src="https://i.imgur.com/uPlWK6i.png"><p class="card-label">LOVE</p><p class="card-price">RS. 3,200</p></label>
+                        </div>
+                        <div class="silhouette-card">
+                            <input type="radio" name="entry.36730917" value="RIOT - FAITH" id="p3" class="hidden-radio" onclick="selectProduct('FAITH', 'https://i.imgur.com/jEgevQz.png')">
+                            <label for="p3"><img src="https://i.imgur.com/jEgevQz.png"><p class="card-label">FAITH</p><p class="card-price">RS. 3,200</p></label>
+                        </div>
+                        <div class="silhouette-card">
+                            <input type="radio" name="entry.36730917" value="RIOT - BLOOM" id="p4" class="hidden-radio" onclick="selectProduct('BLOOM', 'https://i.imgur.com/QaLRDzX.png')">
+                            <label for="p4"><img src="https://i.imgur.com/QaLRDzX.png"><p class="card-label">BLOOM</p><p class="card-price">RS. 3,200</p></label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="step-section hidden" id="step2">
-                <h2 class="step-subtitle">02 // Select Size</h2>
-                <div class="selector-group">
-                    <input type="radio" name="entry.33323870" value="S" id="s1"><label for="s1" class="pill-option">S</label>
-                    <input type="radio" name="entry.33323870" value="M" id="s2"><label for="s2" class="pill-option">M</label>
-                    <input type="radio" name="entry.33323870" value="L" id="s3"><label for="s3" class="pill-option">L</label>
-                    <input type="radio" name="entry.33323870" value="XL" id="s4"><label for="s4" class="pill-option">XL</label>
+                <div class="step-section" id="step2">
+                    <div class="product-page-flex">
+                        <div class="product-image-side"><img id="det-img" src="" alt=""></div>
+                        <div class="product-info-side">
+                            <h1 class="product-name" id="det-name">NAME</h1>
+                            <p class="product-specs">220 GSM // 100% PREMIUM COTTON</p>
+                            <p class="product-price-large">RS. 3,200.00</p>
+                            <div class="selector-group">
+                                <input type="radio" name="entry.33323870" value="S" id="szS" class="hidden-radio"><label for="szS" class="pill-label">S</label>
+                                <input type="radio" name="entry.33323870" value="M" id="szM" class="hidden-radio"><label for="szM" class="pill-label">M</label>
+                                <input type="radio" name="entry.33323870" value="L" id="szL" class="hidden-radio"><label for="szL" class="pill-label">L</label>
+                                <input type="radio" name="entry.33323870" value="XL" id="szXL" class="hidden-radio"><label for="szXL" class="pill-label">XL</label>
+                            </div>
+                            <button type="button" class="btn-pill btn-next" style="margin-top: 40px;" onclick="checkSize()">BUY NOW</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="step-section hidden" id="step3">
-                <h2 class="step-subtitle">03 // Shipping Details</h2>
-                <div class="input-group">
-                    <input type="text" name="entry.1070567161" class="text-input" placeholder="Full Name" required>
-                    <input type="text" name="entry.763608572" class="text-input" placeholder="Contact Number" required>
-                    <input type="text" name="entry.1647676820" class="text-input" placeholder="Delivery Address" required>
+                <div class="step-section" id="step3">
+                    <h2 class="step-subtitle">02 // DELIVERY DETAILS</h2>
+                    <div class="delivery-stack">
+                        <input type="text" name="entry.1070567161" id="fName" class="text-input" placeholder="FULL NAME">
+                        <input type="tel" name="entry.763608572" id="fPhone" class="text-input" placeholder="CONTACT NUMBER" maxlength="12">
+                        <input type="text" name="entry.1647676820" id="fAddr" class="text-input" placeholder="DELIVERY ADDRESS">
+                    </div>
                 </div>
-            </div>
 
-            <div class="step-section hidden" id="step4">
-                <h2 class="step-subtitle">04 // Payment</h2>
-                <div class="selector-group">
-                    <input type="radio" name="entry.754671528" value="Cash on Delivery" id="p1" onclick="showFee()"><label for="p1" class="pill-option">Cash on Delivery</label>
-                    <input type="radio" name="entry.754671528" value="Bank Transfer" id="p2" onclick="showFee()"><label for="p2" class="pill-option">Bank Transfer</label>
+                <div class="step-section" id="step4">
+                    <h2 class="step-subtitle">03 // PAYMENT METHOD</h2>
+                    <div class="selector-group" style="justify-content: center;">
+                        <input type="radio" name="entry.754671528" value="Cash on Delivery" id="pay1" class="hidden-radio" onclick="setPayment(false)"><label for="pay1" class="pill-label">CASH ON DELIVERY</label>
+                        <input type="radio" name="entry.754671528" value="Bank Transfer" id="pay2" class="hidden-radio" onclick="setPayment(true)"><label for="pay2" class="pill-label">BANK TRANSFER</label>
+                    </div>
+                    <div class="payment-notice-container" style="margin-top:20px; height:20px;">
+                        <p id="bank-notice" style="display: none; font-size:0.65rem; color:#555; text-align:center;">Bank Details will be sent via the Contact Number Provided.</p>
+                    </div>
                 </div>
-                <div id="delivery-notice">Delivery Fee: Rs. 450</div>
-            </div>
 
-            <div id="successView">
-                <h2>CONFIRMED</h2>
-                <p>ORDER ARCHIVED.</p>
-                <div class="final-bill">
-                    <div class="total-amount" id="displayTotal">Rs. 3,900</div>
-                    <div id="bankNote" class="bank-msg hidden">Bank details will be sent to you shortly via the contact number provided.</div>
+                <div class="step-section" id="step5">
+                    <h2 class="step-subtitle">04 // ORDER REVIEW</h2>
+                    <div class="bill-wrapper" style="width:100%; max-width:380px; margin:0 auto;">
+                        <div class="bill-item" style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; color:var(--grey);"><span id="bill-prod">PRODUCT</span><span>RS. 3,200.00</span></div>
+                        <div class="bill-item" style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; color:var(--grey);"><span>DELIVERY FEE</span><span>RS. 450.00</span></div>
+                        <div class="bill-total" style="display:flex; justify-content:space-between; margin-top:30px; padding-top:25px; border-top:1px solid var(--border); font-weight:900; font-size:1.2rem;"><span>TOTAL</span><span>RS. 3,650.00</span></div>
+                    </div>
+                    <input type="hidden" name="entry.870632417" id="archiveID">
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <footer class="nav-footer" id="footerNav">
+            <button type="button" class="btn-pill btn-back" id="backBtn" style="visibility:hidden">BACK</button>
+            <button type="button" class="btn-pill btn-next" id="nextBtn" style="display:none">NEXT</button>
+        </footer>
     </main>
 
-    <footer class="nav-footer" id="navUi">
-        <button type="button" class="btn-pill btn-back-text hidden" id="backBtn">BACK</button>
-        <button type="button" class="btn-pill btn-next" id="nextBtn">NEXT</button>
-    </footer>
+    <!-- ABOUT VIEW -->
+    <div id="view-about" class="view">
+        <div class="text-page-content">
+            <div class="section-divider">
+                <h1 class="huge-title">THE MANIFESTO</h1>
+                <p class="manifesto-lead">We don’t react. We disrupt.</p>
+                <p class="standard-para">RIOT was born out of a desire to break away from the noise of fast fashion and mass production. We don’t follow trends, and we don’t design for the masses. We build elevated essentials for those who move with purpose, command attention without speaking, and understand that clothing is a form of cultural currency.</p>
+                <p class="standard-para">A riot isn't just chaos—it’s a collective voice demanding to be heard. This is our voice, distilled into heavy-weight fabrics, precision tailoring, and uncompromising design.</p>
+            </div>
+
+            <div class="section-divider">
+                <h1 class="huge-title">DESIGN PHILOSOPHY</h1>
+                <div class="phi-item">
+                    <span class="phi-num">01.</span>
+                    <h2 class="phi-title">THE WEIGHT OF QUALITY</h2>
+                    <p class="standard-para">We don't do flimsy. Our garments are engineered using premium, heavy-weight fabrics ranging from 220 to 300 GSM. This ensures a structured silhouette, an intentional drape, and a lifespan that outlasts the seasons. Every piece feels substantial because it is substantial.</p>
+                </div>
+                <div class="phi-item">
+                    <span class="phi-num">02.</span>
+                    <h2 class="phi-title">TYPOGRAPHIC HIERARCHY & PRECISION</h2>
+                    <p class="standard-para">Every graphic, every placement, and every stitch is calculated. We utilize sharp typographic hierarchy and clean, technical layouts to create visuals that are striking yet disciplined.</p>
+                </div>
+                <div class="phi-item">
+                    <span class="phi-num">03.</span>
+                    <h2 class="phi-title">ELEVATED ESSENTIALS</h2>
+                    <p class="standard-para">We are redefining the daily uniform. By stripping away the gimmicks, we focus entirely on perfecting the fit, the fabric, and the form. These are pieces designed to stand alone or anchor your entire rotation.</p>
+                </div>
+            </div>
+
+            <div class="section-divider">
+                <h1 class="huge-title">THE COLLECTIONS</h1>
+                <p class="standard-para">Every drop from RIOT tells a specific story, exploring the contrast between raw human emotion and structured urban design. From the conceptual narrative of our Love Series to the core utility of our main drops, we bridge the gap between high-end conceptual design and daily wearability. We release garments in limited quantities to ensure exclusivity and maintain the highest standards of production.</p>
+                <div class="quote-block">"TO CREATE A RIOT, YOU MUST FIRST REFUSE TO BLEND IN."</div>
+                <p class="standard-para" style="text-align: center; color: #fff;">This is more than a clothing line. It is a subculture. Welcome to the movement.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT VIEW -->
+    <div id="view-contact" class="view">
+        <div class="text-page-content">
+            <div class="section-divider">
+                <h1 class="huge-title">CONTACT / DISRUPT</h1>
+                <p class="standard-para">Got a question about a drop, an order, or a potential collaboration? Get in touch with the team. We operate with precision, and we’ll get back to you within 24–48 hours.</p>
+            </div>
+
+            <div class="section-divider">
+                <h2 class="contact-label">ORDER & GENERAL INQUIRIES</h2>
+                <p class="contact-detail">EMAIL: <a href="mailto:riotapparelcompany@gmail.com" class="contact-link">RIOTAPPARELCOMPANY@GMAIL.COM</a></p>
+                <p class="contact-detail">HOURS: MON – FRI | 10:00 – 18:00</p>
+                <p class="standard-para" style="font-size: 0.75rem; color:#444; margin-top:20px; text-transform: none;">Note on Delivery: Due to the highly limited nature of our heavy-weight drops, please allow 5–7 business days for fulfillment during peak collection launches.</p>
+            </div>
+
+            <div class="section-divider">
+                <h2 class="contact-label">COLLABORATIONS & PRESS</h2>
+                <p class="contact-detail">EDITORIAL: IG - <a href="https://instagram.com/riotapparel.lk" class="contact-link">@RIOTAPPAREL.LK</a></p>
+                <p class="contact-detail">PR & MEDIA: <a href="mailto:riotapparelcompany@gmail.com" class="contact-link">RIOTAPPARELCOMPANY@GMAIL.COM</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div id="view-success" class="view">
+        <h2>CONFIRMED</h2>
+        <p id="order-tag">ORDER NUMBER - #####</p>
+    </div>
 </div>
 
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted){handleSuccess();}"></iframe>
-
 <script>
-    const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4')];
-    const backBtn = document.getElementById('backBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const deliveryNotice = document.getElementById('delivery-notice');
-    let currentStep = 0;
+    let step = 1;
     let submitted = false;
+    const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4'), document.getElementById('step5')];
+    const nBtn = document.getElementById('nextBtn');
+    const bBtn = document.getElementById('backBtn');
+    const phoneInput = document.getElementById('fPhone');
+    const orderNumber = Math.floor(10000 + Math.random() * 90000);
+    document.getElementById('archiveID').value = orderNumber;
 
-    function showFee() {
-        deliveryNotice.classList.add('visible-notice');
+    function showView(viewId) {
+        if(submitted && viewId !== 'success') return;
+        
+        document.querySelectorAll('.view').forEach(v => {
+            v.classList.remove('active');
+            v.style.display = 'none';
+        });
+
+        const targetView = document.getElementById('view-' + viewId);
+        targetView.style.display = 'flex';
+        targetView.classList.add('active');
+        
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        if(viewId !== 'shop' && viewId !== 'success') document.getElementById('nav-' + viewId).classList.add('active');
+        
+        targetView.scrollTop = 0;
+        
+        if(viewId === 'about' || viewId === 'contact') {
+            document.getElementById('footerNav').style.display = 'flex';
+            bBtn.style.visibility = 'visible';
+            nBtn.style.display = 'none';
+        } else if (viewId === 'shop') {
+            updateShopNav();
+        }
     }
 
-    nextBtn.addEventListener('click', () => {
-        if(currentStep !== 2) {
-            const checked = steps[currentStep].querySelector('input:checked');
-            if(!checked) { alert("Selection Required"); return; }
-        } else {
-            const inputs = steps[2].querySelectorAll('input');
-            if([...inputs].some(i => i.value === "")) { alert("Details Required"); return; }
-        }
+    phoneInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, ''); 
+        let x = val.match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : x[1] + ' ' + x[2] + (x[3] ? ' ' + x[3] : '');
+    });
 
-        if (currentStep < steps.length - 1) {
-            steps[currentStep].classList.add('hidden');
-            currentStep++;
-            steps[currentStep].classList.remove('hidden');
-            backBtn.classList.remove('hidden');
-            if(currentStep === steps.length - 1) nextBtn.innerText = "SUBMIT";
-        } else {
+    function selectProduct(name, img) {
+        document.getElementById('det-name').innerText = name;
+        document.getElementById('det-img').src = img;
+        document.getElementById('bill-prod').innerText = name;
+        setTimeout(() => move(1), 300);
+    }
+
+    function checkSize() {
+        if(!document.querySelector('input[name="entry.33323870"]:checked')) { alert("SELECT SIZE"); return; }
+        move(1);
+    }
+
+    function setPayment(isBank) {
+        document.getElementById('bank-notice').style.display = isBank ? 'block' : 'none';
+    }
+
+    function move(dir) {
+        steps[step-1].classList.remove('active');
+        step += dir;
+        steps[step-1].classList.add('active');
+        updateShopNav();
+    }
+
+    function updateShopNav() {
+        document.getElementById('footerNav').style.display = 'flex';
+        bBtn.style.visibility = (step > 1) ? 'visible' : 'hidden';
+        nBtn.style.display = (step === 1 || step === 2) ? 'none' : 'block';
+        nBtn.innerText = (step === 5) ? "SUBMIT" : "NEXT";
+    }
+
+    nBtn.addEventListener('click', () => {
+        if(step === 3) {
+            if(!document.getElementById('fName').value || phoneInput.value.length < 10) {
+                alert("COMPLETE DETAILS CORRECTLY"); return;
+            }
+            move(1);
+        } else if(step === 4) {
+            if(!document.querySelector('input[name="entry.754671528"]:checked')) { alert("SELECT PAYMENT METHOD"); return; }
+            move(1);
+        } else if (step === 5) {
             submitted = true;
             document.getElementById('riotForm').submit();
         }
     });
 
-    backBtn.addEventListener('click', () => {
-        steps[currentStep].classList.add('hidden');
-        currentStep--;
-        steps[currentStep].classList.remove('hidden');
-        nextBtn.innerText = "NEXT";
-        if(currentStep === 0) backBtn.classList.add('hidden');
+    bBtn.addEventListener('click', () => {
+        if (!document.getElementById('view-shop').classList.contains('active')) {
+            showView('shop');
+        } else {
+            move(-1);
+        }
     });
 
     function handleSuccess() {
-        const paymentOption = document.querySelector('input[name="entry.754671528"]:checked');
-        const paymentMethod = paymentOption ? paymentOption.value : "";
-        if(paymentMethod === "Bank Transfer") {
-            document.getElementById('bankNote').classList.remove('hidden');
-        }
-
-        document.getElementById('navUi').classList.add('hidden');
-        document.getElementById('riotForm').querySelectorAll('.step-section').forEach(s => s.classList.add('hidden'));
-        document.getElementById('successView').style.display = 'flex';
+        showView('success');
+        document.getElementById('order-tag').innerText = "ORDER NUMBER - " + orderNumber;
+        document.getElementById('footerNav').style.display = 'none';
     }
 </script>
+
 </body>
 </html>
