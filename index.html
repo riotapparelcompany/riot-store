@@ -5,38 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RIOT | ARCHIVE SYSTEM</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #ffffff;
-            --bg: #000000;
-            --grey: #888888;
-            --border: #1a1a1a;
-            --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --input-font: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            --ink: #f2f2f0;
+            --bg: #060606;
+            --grey: #75756f;
+            --hair: rgba(242, 242, 240, 0.09);
+            --hair-strong: rgba(242, 242, 240, 0.22);
+            --ui-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
         }
 
-        /* --- CORE --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body, html {
             height: 100%;
             background-color: var(--bg);
             font-family: var(--ui-font);
-            color: var(--accent);
+            color: var(--ink);
             -webkit-font-smoothing: antialiased;
-            overflow: hidden; 
+            overflow: hidden;
             text-transform: uppercase;
         }
 
-        /* HIDE SCROLLBARS */
         *::-webkit-scrollbar { display: none; }
         * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+        }
 
         .form-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
             position: relative;
         }
@@ -44,37 +50,47 @@
         /* --- HEADER --- */
         .header-area {
             flex: 0 0 auto;
-            padding: 40px 25px;
+            padding: 46px 30px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
+            position: relative;
+        }
+        .header-area::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 1px;
+            background: var(--hair);
         }
 
-        #riot-logo { width: 130px; height: auto; cursor: pointer; }
-        .header-right { display: flex; align-items: center; gap: 30px; }
-        .nav-links { display: flex; gap: 25px; }
+        #riot-logo { width: 108px; height: auto; cursor: pointer; transition: opacity 0.3s ease; }
+        #riot-logo:hover { opacity: 0.65; }
+
+        .header-right { display: flex; align-items: center; gap: 34px; }
+        .nav-links { display: flex; gap: 30px; }
         .nav-links a {
-            color: #fff; text-decoration: none; font-size: 0.65rem;
-            font-weight: 900; letter-spacing: 2px; opacity: 0.4; transition: 0.3s;
+            color: var(--ink); text-decoration: none; font-size: 0.62rem;
+            font-weight: 500; letter-spacing: 1.5px; opacity: 0.4; transition: opacity 0.3s ease;
             cursor: pointer;
         }
         .nav-links a:hover, .nav-links a.active { opacity: 1; }
-        .social-icons { display: flex; gap: 18px; padding-left: 20px; border-left: 1px solid #222; }
-        .social-icons a { color: #fff; font-size: 1.1rem; opacity: 0.6; transition: 0.3s; }
+
+        .social-icons { display: flex; gap: 20px; padding-left: 26px; border-left: 1px solid var(--hair); }
+        .social-icons a { color: var(--ink); font-size: 0.9rem; opacity: 0.45; transition: opacity 0.3s ease; }
+        .social-icons a:hover { opacity: 1; }
 
         /* --- VIEW MANAGEMENT --- */
         .view {
             display: none;
             flex: 1 1 auto;
-            overflow-y: auto; 
-            padding: 0 25px;
-            animation: fadeIn 0.4s ease forwards;
+            overflow-y: auto;
+            padding: 0 30px;
+            animation: fadeIn 0.5s ease forwards;
         }
         .view.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- SHOP / FORM AREA --- */
         .main-content-area {
             flex: 1;
             display: flex;
@@ -87,114 +103,187 @@
         .step-section {
             width: 100%;
             display: none;
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: settle 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
         .step-section.active { display: block; }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes settle {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .step-subtitle {
-            font-size: 0.85rem;
-            letter-spacing: 8px;
-            font-weight: 900;
-            margin-bottom: 40px; 
+            font-family: var(--mono);
+            font-size: 0.64rem;
+            letter-spacing: 4px;
+            font-weight: 400;
+            color: var(--grey);
+            margin-bottom: 60px;
             text-align: center;
         }
 
         /* --- STEP 1: SILHOUETTES --- */
-        .silhouette-row { display: flex; justify-content: center; gap: 20px; width: 100%; max-width: 1100px; }
-        .silhouette-card { flex: 1; text-align: center; }
-        .silhouette-card img { width: 100%; height: auto; margin-bottom: 15px; }
-        .silhouette-card label { display: block; cursor: pointer; padding: 10px; transition: 0.5s; }
-        .silhouette-card:hover label { transform: scale(1.08); }
-        .card-label { font-weight: 900; font-size: 0.75rem; letter-spacing: 2px; }
-        .card-price { font-size: 0.65rem; color: var(--grey); margin-top: 6px; }
+        .silhouette-row { display: flex; justify-content: center; gap: 46px; width: 100%; max-width: 1100px; }
+        .silhouette-card {
+            flex: 1; text-align: center;
+            transition: opacity 0.4s ease;
+        }
+        .silhouette-row:hover .silhouette-card { opacity: 0.38; }
+        .silhouette-row .silhouette-card:hover { opacity: 1; }
+        .silhouette-card img { width: 100%; height: auto; margin-bottom: 22px; }
+        .silhouette-card label { display: block; cursor: pointer; }
+        .hidden-radio:focus-visible + label { outline: 1px solid var(--ink); outline-offset: 6px; }
+        .card-label { font-weight: 500; font-size: 0.66rem; letter-spacing: 2px; }
+        .card-price { font-family: var(--mono); font-size: 0.6rem; color: var(--grey); margin-top: 9px; letter-spacing: 0.5px; }
 
-        /* --- STEP 2: SIZE --- */
-        .product-page-flex { display: flex; align-items: center; justify-content: center; gap: 50px; text-align: left; max-width: 950px; margin: 0 auto; }
-        .product-image-side img { width: 100%; max-width: 400px; }
-        .product-name { font-size: 3rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; margin-bottom: 10px; }
-        .product-specs { font-size: 0.65rem; color: var(--grey); margin-bottom: 25px; }
-        .product-price-large { font-size: 1.4rem; font-weight: 800; margin-bottom: 30px; }
+        /* --- STEP 2: PRODUCT DETAIL --- */
+        .product-page-flex { display: flex; align-items: center; justify-content: center; gap: 90px; text-align: left; max-width: 980px; margin: 0 auto; }
+        .product-image-side img { width: 100%; max-width: 380px; }
+        .product-name {
+            font-family: var(--ui-font);
+            font-weight: 200;
+            text-transform: lowercase;
+            font-size: 3.6rem;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 18px;
+            color: var(--ink);
+        }
+        .product-specs { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 1.5px; color: var(--grey); margin-bottom: 30px; }
+        .product-price-large { font-family: var(--ui-font); font-size: 1.1rem; font-weight: 400; letter-spacing: 0.5px; color: var(--ink); margin-bottom: 38px; }
 
         /* --- SELECTORS & INPUTS --- */
         .hidden-radio { display: none; }
-        .selector-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px; }
-        .pill-label { border: 1px solid #222; padding: 12px 28px; border-radius: 100px; font-weight: 900; cursor: pointer; font-size: 0.7rem; transition: 0.3s; }
-        .hidden-radio:checked + .pill-label { background: #fff; color: #000; border-color: #fff; }
+        .selector-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .pill-label {
+            border: 1px solid var(--hair-strong);
+            background: transparent;
+            min-width: 48px;
+            padding: 11px 18px; border-radius: 0; font-weight: 500; cursor: pointer;
+            font-size: 0.64rem; letter-spacing: 1px; text-align: center;
+            transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+        }
+        .pill-label:hover { border-color: var(--ink); }
+        .hidden-radio:checked + .pill-label { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
         /* --- DELIVERY DETAILS --- */
-        .delivery-stack { width: 100%; max-width: 450px; margin: 0 auto; border-top: 1px solid #1a1a1a; }
+        .delivery-stack { width: 100%; max-width: 420px; margin: 0 auto; }
         .text-input {
-            width: 100%; background: transparent; border: none; border-bottom: 1px solid #1a1a1a;
-            color: #fff; padding: 18px 0; outline: none; text-align: center;
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--hair);
+            color: var(--ink); padding: 20px 0; outline: none; text-align: center;
             letter-spacing: 1px;
-            font-family: var(--ui-font); 
-            font-weight: 700;
+            font-family: var(--ui-font);
+            font-weight: 500;
             font-size: 0.85rem;
-            text-transform: none; 
-            transition: border-color 0.4s ease;
+            text-transform: none;
+            transition: border-color 0.3s ease;
         }
+        .text-input:focus { border-bottom-color: var(--ink); }
         .text-input::placeholder {
             font-family: var(--ui-font);
-            font-weight: 900;
-            color: #333;
-            font-size: 0.6rem;
+            font-weight: 500;
+            color: #38382f;
+            font-size: 0.58rem;
             letter-spacing: 3px;
             text-transform: uppercase;
         }
 
         /* --- TEXT PAGES (ABOUT/CONTACT) --- */
-        .text-page-content { max-width: 700px; margin: 0 auto; }
-        .section-divider { border-bottom: 1px solid var(--border); padding: 40px 0; }
+        .text-page-content { max-width: 640px; margin: 0 auto; padding: 20px 0 60px; }
+        .section-divider { border-bottom: 1px solid var(--hair); padding: 52px 0; }
         .section-divider:last-child { border-bottom: none; }
-        
-        .huge-title { font-size: 1.4rem; font-weight: 900; letter-spacing: 4px; margin-bottom: 25px; color: #fff; }
-        .manifesto-lead { font-size: 0.85rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; color: #fff; }
-        .standard-para { font-size: 0.75rem; line-height: 1.8; color: var(--grey); text-transform: none; margin-bottom: 20px; letter-spacing: 0.5px; }
-        
-        .phi-item { margin-bottom: 35px; }
-        .phi-num { font-family: var(--input-font); font-size: 0.6rem; color: #444; display: block; margin-bottom: 5px; }
-        .phi-title { font-size: 0.9rem; font-weight: 900; margin-bottom: 12px; letter-spacing: 2px; color: #fff; }
-        
-        .quote-block { font-size: 1.1rem; font-weight: 900; text-align: center; margin: 60px 0; letter-spacing: 1.5px; line-height: 1.3; color: #fff; }
+
+        .huge-title { font-size: 1.05rem; font-weight: 600; letter-spacing: 3px; margin-bottom: 26px; color: var(--ink); }
+        .manifesto-lead {
+            font-family: var(--ui-font);
+            font-weight: 300;
+            font-style: italic;
+            text-transform: lowercase;
+            font-size: 1.5rem;
+            letter-spacing: 0.2px;
+            margin-bottom: 22px;
+            color: var(--ink);
+        }
+        .standard-para { font-size: 0.74rem; line-height: 2; color: var(--grey); text-transform: none; margin-bottom: 20px; letter-spacing: 0.3px; }
+
+        .phi-item { margin-bottom: 38px; }
+        .phi-num { font-family: var(--mono); font-size: 0.58rem; color: var(--grey); display: block; margin-bottom: 6px; letter-spacing: 1px; }
+        .phi-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; letter-spacing: 1.5px; color: var(--ink); }
+
+        .quote-block {
+            font-family: var(--ui-font);
+            font-weight: 300;
+            font-style: italic;
+            text-transform: lowercase;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 70px 0;
+            letter-spacing: 0.2px;
+            line-height: 1.45;
+            color: var(--ink);
+        }
 
         /* CONTACT SPECIFIC */
-        .contact-label { font-size: 0.75rem; color: #fff; font-weight: 900; letter-spacing: 2px; margin-bottom: 12px; }
-        .contact-detail { font-size: 0.75rem; letter-spacing: 0.5px; margin-bottom: 5px; color: var(--grey); font-weight: 400; text-transform: none; }
-        .contact-link { color: inherit; text-decoration: none; border-bottom: 1px solid #222; }
+        .contact-label { font-size: 0.72rem; color: var(--ink); font-weight: 600; letter-spacing: 1.5px; margin-bottom: 14px; }
+        .contact-detail { font-size: 0.74rem; letter-spacing: 0.4px; margin-bottom: 6px; color: var(--grey); font-weight: 400; text-transform: none; }
+        .contact-link { color: inherit; text-decoration: none; border-bottom: 1px solid var(--hair-strong); transition: border-color 0.3s ease; }
+        .contact-link:hover { border-color: var(--ink); }
 
         /* --- FOOTER --- */
-        .nav-footer { 
-            flex: 0 0 auto; padding: 30px 20px; display: flex; justify-content: center; align-items: center; gap: 25px; background: var(--bg);
+        .nav-footer {
+            flex: 0 0 auto; padding: 34px 20px; display: flex; justify-content: center; align-items: center; gap: 30px; background: var(--bg);
+            position: relative;
         }
-        .btn-pill { height: 42px; min-width: 140px; border-radius: 100px; border: none; font-weight: 900; font-size: 0.65rem; letter-spacing: 3px; cursor: pointer; transition: 0.3s; }
-        .btn-next { background: #fff; color: #000; }
-        .btn-back { background: transparent; color: #444; min-width: auto; padding: 0 15px; font-size: 0.5rem; letter-spacing: 1px; }
-        .btn-back:hover { color: #fff; }
+        .nav-footer::before {
+            content: '';
+            position: absolute; left: 0; right: 0; top: 0;
+            height: 1px;
+            background: var(--hair);
+        }
+        .btn-pill {
+            height: 46px; min-width: 180px; border-radius: 0; border: 1px solid var(--ink);
+            background: transparent; color: var(--ink);
+            font-weight: 500; font-size: 0.62rem; letter-spacing: 3px; cursor: pointer; transition: 0.3s ease;
+        }
+        .btn-next:hover { background: var(--ink); color: var(--bg); }
+        .btn-back { background: transparent; color: var(--grey); border-color: transparent; min-width: auto; padding: 0 15px; font-size: 0.56rem; letter-spacing: 1.5px; }
+        .btn-back:hover { color: var(--ink); }
 
-        /* --- SUCCESS VIEW (Centered & Resized) --- */
-        #view-success { 
-            flex: 1; 
-            display: none; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            text-align: center; 
-            padding-bottom: 10vh; /* Adjusts the center point slightly up for visual balance */
+        /* --- SUCCESS VIEW --- */
+        #view-success {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 10vh;
         }
-        #view-success h2 { font-size: 3.5rem; font-weight: 900; letter-spacing: -3px; }
-        #view-success p { color: var(--grey); letter-spacing: 5px; font-size: 0.65rem; margin-top: 15px; }
+        .success-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid var(--hair-strong);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; color: var(--ink);
+            margin-bottom: 30px;
+        }
+        #view-success h2 {
+            font-family: var(--ui-font);
+            font-weight: 200;
+            text-transform: lowercase;
+            font-size: 3rem;
+            letter-spacing: -1.5px;
+            color: var(--ink);
+        }
+        #view-success p { font-family: var(--mono); color: var(--grey); letter-spacing: 3px; font-size: 0.6rem; margin-top: 16px; }
 
         @media (max-width: 768px) {
             body, html { overflow-y: auto; }
-            .header-area { flex-direction: column; gap: 20px; padding: 20px 10px; }
-            .silhouette-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .product-page-flex { flex-direction: column; text-align: center; }
-            #view-success h2 { font-size: 2.5rem; }
+            .header-area { flex-direction: column; gap: 22px; padding: 26px 16px; }
+            .silhouette-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+            .silhouette-row:hover .silhouette-card { opacity: 1; }
+            .product-page-flex { flex-direction: column; text-align: center; gap: 36px; }
+            .product-name { font-size: 2.4rem; }
+            #view-success h2 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -202,7 +291,7 @@
 
 <div class="form-container">
     <header class="header-area">
-        <img src="https://i.imgur.com/TvLckH2.png" id="riot-logo" alt="RIOT" onclick="showView('shop')">
+        <img src="https://i.imgur.com/9f0Xuo8.png" id="riot-logo" alt="RIOT" onclick="showView('shop')">
         <div class="header-right">
             <nav class="nav-links">
                 <a onclick="showView('about')" id="nav-about">ABOUT</a>
@@ -233,12 +322,12 @@
                             <label for="p2"><img src="https://i.imgur.com/uPlWK6i.png"><p class="card-label">LOVE</p><p class="card-price">RS. 3,200</p></label>
                         </div>
                         <div class="silhouette-card">
-                            <input type="radio" name="entry.36730917" value="RIOT - FAITH" id="p3" class="hidden-radio" onclick="selectProduct('FAITH', 'https://i.imgur.com/jEgevQz.png')">
-                            <label for="p3"><img src="https://i.imgur.com/jEgevQz.png"><p class="card-label">FAITH</p><p class="card-price">RS. 3,200</p></label>
+                            <input type="radio" name="entry.36730917" value="RIOT - BALANCE" id="p3" class="hidden-radio" onclick="selectProduct('BALANCE', 'https://i.imgur.com/d8JeNU4.png')">
+                            <label for="p3"><img src="https://i.imgur.com/d8JeNU4.png"><p class="card-label">BALANCE</p><p class="card-price">RS. 3,200</p></label>
                         </div>
                         <div class="silhouette-card">
-                            <input type="radio" name="entry.36730917" value="RIOT - BLOOM" id="p4" class="hidden-radio" onclick="selectProduct('BLOOM', 'https://i.imgur.com/QaLRDzX.png')">
-                            <label for="p4"><img src="https://i.imgur.com/QaLRDzX.png"><p class="card-label">BLOOM</p><p class="card-price">RS. 3,200</p></label>
+                            <input type="radio" name="entry.36730917" value="RIOT - BLOOM" id="p4" class="hidden-radio" onclick="selectProduct('BLOOM', 'https://i.imgur.com/3u8Tcok.png')">
+                            <label for="p4"><img src="https://i.imgur.com/3u8Tcok.png"><p class="card-label">BLOOM</p><p class="card-price">RS. 3,200</p></label>
                         </div>
                     </div>
                 </div>
@@ -285,8 +374,8 @@
                     <h2 class="step-subtitle">04 // ORDER REVIEW</h2>
                     <div class="bill-wrapper" style="width:100%; max-width:380px; margin:0 auto;">
                         <div class="bill-item" style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; color:var(--grey);"><span id="bill-prod">PRODUCT</span><span>RS. 3,200.00</span></div>
-                        <div class="bill-item" style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; color:var(--grey);"><span>DELIVERY FEE</span><span>RS. 450.00</span></div>
-                        <div class="bill-total" style="display:flex; justify-content:space-between; margin-top:30px; padding-top:25px; border-top:1px solid var(--border); font-weight:900; font-size:1.2rem;"><span>TOTAL</span><span>RS. 3,650.00</span></div>
+                        <div class="bill-item" style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; color:var(--grey);"><span>DELIVERY FEE</span><span>RS. 200.00</span></div>
+                        <div class="bill-total" style="display:flex; justify-content:space-between; margin-top:30px; padding-top:25px; border-top:1px solid var(--border); font-weight:900; font-size:1.2rem;"><span>TOTAL</span><span>RS. 3,400.00</span></div>
                     </div>
                     <input type="hidden" name="entry.870632417" id="archiveID">
                 </div>
@@ -361,6 +450,7 @@
 
     <!-- SUCCESS VIEW -->
     <div id="view-success" class="view">
+        <div class="success-icon"><i class="fa-solid fa-check"></i></div>
         <h2>CONFIRMED</h2>
         <p id="order-tag">ORDER NUMBER - #####</p>
     </div>
